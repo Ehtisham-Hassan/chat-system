@@ -1,0 +1,33 @@
+<%- include("includes/head.ejs") %>
+
+
+<body>
+    <form method="get" action="/chats/new">
+        <button>New chats</button>
+    </form>
+    <br>
+    <% for(let chat of chats) {  %>    
+        <div class="chat">
+            <hr>
+            <p>from: <%= chat.from %> </p>
+            <p >to: <%= chat.to %> </p>
+            <p class="msg" >message: <%= chat.message %> 
+                <form method="get" action="/chats/<%= chat._id %>/edit">
+                    <button>edit</button>
+                </form>
+            </p>
+
+            <p >Date: <%= chat.created_at.toString().split(" ").slice(0,4).join('-') %> </p>
+            <p ><%= chat.created_at.toString().split(" ")[0] %> </p>
+
+            <form method="post" action="/chats/<%= chat._id %>/delete?_method=delete">
+                <button>Delete</button>
+            </form>
+
+        </div>
+        <br>
+        <br>
+    <% } %>
+            
+</body>
+</html>

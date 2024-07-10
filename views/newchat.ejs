@@ -1,0 +1,19 @@
+<%- include("includes/head.ejs") %>
+
+<body>
+    <h3>Write New chat</h3>
+
+    <form method="post" action="/chats">
+        <input placeholder="who are you" name="from">
+        <br>
+        <br>
+        <textarea name="message" >Write Your message here</textarea>
+        <br>
+        <br>
+        <!-- <input placeholder="Write message" name="message"> -->
+        <input placeholder="send to" name="to">
+        <br>
+        <br>
+        <button>send</button>
+    </form>
+</body>

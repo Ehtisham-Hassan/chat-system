@@ -34,19 +34,12 @@ app.listen(port, () => {
     console.log("Server is listening on port 8080");
 })
 
-app.get("/chats", async (req,res,next) => {
-    try {
+app.get("/chats", asyncWrap ( async (req,res,next) => {
         let chats = await Chat.find();
         // console.log(chats);
         // res.send("working on chats")
         res.render("chatsweb.ejs", {chats})
-        
-    } catch (error) {
-        console.log(error.message);
-        next(error);
-      
-    }
-})
+}))
 
 app.get("/chats/new", (req,res) => {
     //test error
@@ -58,8 +51,7 @@ app.get("/chats/new", (req,res) => {
     res.render("newchat.ejs")
 })
 
-app.post("/chats",async (req,res,next) => {
-    try {
+app.post("/chats", asyncWrap (async (req,res,next) => {
         let {from, to ,message} = req.body;
         let newChat = new Chat({
            from: from,
@@ -70,36 +62,32 @@ app.post("/chats",async (req,res,next) => {
         
         await newChat.save();
         res.redirect('/chats');
-        
-    } catch (error) {
-        console.log(error.message);
-        next(error);
+           
+}))
+
+
+function asyncWrap(fn){
+    return function(req,res,next){
+        fn(req,res,next).catch((err) =>{
+            console.log(err.message);
+            next(err);
+        })
     }
-
-   
-})
-
-
+}
 
 //NEW - SHOW ROUTE  
-app.get("/chats/:id/edit", async (req,res,next) => {
-    try {
+app.get("/chats/:id/edit", asyncWrap (async (req,res,next) => {
         let {id} = req.params;
         let chat = await Chat.findById(id);
         if( !chat ){
             throw new ExpressError('chat not found',404);
         }
         res.render("edit.ejs",{chat});
-    } catch (error) {
-        console.log(error.message);
-        next(error);
-    }
-})
+}))
 
 
 
-app.put("/chats/:id/edit", async (req,res,next) => {
-    try {
+app.put("/chats/:id/edit", asyncWrap ( async (req,res,next) => {
         let {id} = req.params;
         let { msg: newmsg } = req.body;
         console.log("msg :",newmsg, "  id:",id);
@@ -109,18 +97,11 @@ app.put("/chats/:id/edit", async (req,res,next) => {
         // let chat = await Chat.findById(id);
         // console.log(chats);
         // res.send("working on chats")
-        res.redirect("/chats")
-        
-    } catch (error) {
-        console.log(error.message);
-        next(error);
-
-    }
-})
+        res.redirect("/chats")        
+}))
 
 
-app.delete("/chats/:id/delete", async (req,res,next) => {
-    try {
+app.delete("/chats/:id/delete", asyncWrap ( async (req,res,next) => {
         let {id} = req.params;
         let chat = await Chat.findByIdAndDelete(id)
         console.log("now :",chat);
@@ -130,13 +111,7 @@ app.delete("/chats/:id/delete", async (req,res,next) => {
         // console.log(chats);
         // res.send("working on chats")
         res.redirect("/chats")
-        
-    } catch (error) {
-        console.log(error.message);
-        next(error);
-
-    }
-})
+}))
 
 //Error Handling Middleware
 app.use((err,req,res,next)=> {
